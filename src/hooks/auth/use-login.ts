@@ -1,4 +1,4 @@
-import postLogin from "@/api/auth/post-login";
+import { postLogin } from "@/api/auth/post-login";
 import { MutationConfig } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
 

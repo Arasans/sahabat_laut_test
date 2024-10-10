@@ -27,10 +27,7 @@ export default function LoginForm() {
 
   const { isPending, mutate: postLogin } = useLogin({
     options: {
-      onSuccess(data) {
-        localStorage.setItem("token", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
-
+      onSuccess() {
         router.push("/");
       },
       onError() {
@@ -79,6 +76,7 @@ export default function LoginForm() {
             fullWidth
             loading={isPending}
             onClick={handleSubmit(onSubmit)}
+            type="submit"
           >
             Login
           </LoadingButton>
