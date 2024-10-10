@@ -3,6 +3,7 @@ import api from "@/lib/api";
 
 interface LoginResponse {
   accessToken: string;
+  refreshToken: string;
 }
 
 export default async function postLogin(

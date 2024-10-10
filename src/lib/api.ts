@@ -25,11 +25,17 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshResponse = await api.post(
-          "/auth/refresh-token",
-          {},
-          { withCredentials: true }
-        );
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) {
+          console.error("Refresh token tidak ditemukan");
+          window.location.href = "/login";
+          return Promise.reject(error);
+        }
+
+        const refreshResponse = await api.post("/auth/refresh-token", {
+          refreshToken,
+        });
+
         const newAccessToken = refreshResponse.data.accessToken;
 
         localStorage.setItem("token", newAccessToken);
@@ -39,7 +45,12 @@ api.interceptors.response.use(
 
         return api(originalRequest);
       } catch (err) {
-        console.log("Refresh token expired or invalid");
+        console.error("Refresh token expired or invalid");
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+
+        window.location.href = "/login";
         return Promise.reject(err);
       }
     }

@@ -27,7 +27,10 @@ export default function LoginForm() {
 
   const { isPending, mutate: postLogin } = useLogin({
     options: {
-      onSuccess() {
+      onSuccess(data) {
+        localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
+
         router.push("/");
       },
       onError() {
