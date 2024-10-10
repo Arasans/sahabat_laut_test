@@ -1,101 +1,98 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { Container, Typography, Box, TextField } from "@mui/material";
+import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import Navbar from "./_components/navbar";
+import { useSpecies } from "@/hooks/auth/species/use-species"; // Ensure the import is correct
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [pagination, setPagination] = useState({
+    pageNumber: 0,
+    pageSize: 10,
+    keyword: "",
+  });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const { data, isLoading, isError, error } = useSpecies({
+    pageNumber: pagination.pageNumber + 1,
+    pageSize: pagination.pageSize,
+    keyword: pagination.keyword || undefined,
+  });
+
+  const columns: GridColDef[] = [
+    { field: "id", headerName: "ID", width: 150 },
+    { field: "faoCode", headerName: "FAO Code", width: 120 },
+    { field: "typeOfFish", headerName: "Type of Fish", width: 150 },
+    { field: "scientificName", headerName: "Scientific Name", width: 200 },
+    { field: "englishName", headerName: "English Name", width: 200 },
+    { field: "indonesianName", headerName: "Indonesian Name", width: 200 },
+    {
+      field: "statusInIndonesia",
+      headerName: "Status in Indonesia",
+      width: 200,
+    },
+    { field: "fishUtilization", headerName: "Utilization", width: 150 },
+  ];
+
+  const handlePaginationChange = (model: GridPaginationModel) => {
+    setPagination((prev) => ({
+      ...prev,
+      pageNumber: model.page,
+      pageSize: model.pageSize,
+    }));
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPagination((prev) => ({
+      ...prev,
+      keyword: e.target.value,
+      pageNumber: 0,
+    }));
+  };
+
+  return (
+    <>
+      <Navbar />
+      <Container maxWidth="xl" className="pt-5">
+        <Typography variant="h4" component="h1" gutterBottom>
+          Species List
+        </Typography>
+
+        {/* Search Bar */}
+        <Box my={2}>
+          <TextField
+            label="Search species"
+            variant="outlined"
+            fullWidth
+            value={pagination.keyword}
+            onChange={handleSearch}
+            className="mb-4"
+          />
+        </Box>
+
+        {isError && (
+          <Typography variant="body1" color="error">
+            Failed to fetch data: {error?.message || "Unknown error"}
+          </Typography>
+        )}
+
+        <div className="flex flex-col h-auto">
+          <DataGrid
+            rows={data?.data || []}
+            columns={columns}
+            rowCount={data ? data.totalRecords : 0}
+            paginationMode="server"
+            paginationModel={{
+              page: pagination.pageNumber,
+              pageSize: pagination.pageSize,
+            }}
+            onPaginationModelChange={handlePaginationChange}
+            pageSizeOptions={[5, 10, 15, 20]}
+            loading={isLoading}
+            autoHeight
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </Container>
+    </>
   );
 }
