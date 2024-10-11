@@ -1,4 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fish Species Management App
+
+## Overview
+
+This project is a web application built with Next.js for managing fish species data. It allows users to view, create, edit, and delete fish species while ensuring proper authentication and authorization for admin users.
+
+## Features
+
+- User authentication with JWT
+- View list of fish species
+- Create new species
+- Edit existing species
+- Delete species
+- Responsive UI built with Material-UI and Tailwind CSS
+- Data validation using Zod
+- API integration for fetching and manipulating data
+
+## Technologies Used
+
+- **Next.js**: A React framework for server-rendered applications
+- **React**: A JavaScript library for building user interfaces
+- **Material-UI**: A popular React UI framework for building responsive layouts
+- **Tailwind CSS**: A utility-first CSS framework for styling
+- **React Hook Form**: For managing form state and validation
+- **Zod**: For schema validation
+- **Axios**: For making HTTP requests
+- **React Query**: For managing server state and caching
 
 ## Getting Started
 
