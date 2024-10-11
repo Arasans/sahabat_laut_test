@@ -17,14 +17,17 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { Species } from "@/api/auth/species/get-species";
 import EditSpeciesModal from "./_components/EditSpeciesModal";
+import DeleteSpeciesModal from "./_components/DeleteSpeciesModal";
 
 export default function Home() {
   const router = useRouter();
   const [token, setToken] = useState<string | undefined>(undefined);
   const [selectedSpecies, setSelectedSpecies] = useState<Species | null>(null);
 
-  const [open, setOpen] = useState(false);
-  const handleClose = () => setOpen(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const handleCloseEdit = () => setOpenEdit(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const handleCloseDelete = () => setOpenDelete(false);
 
   useEffect(() => {
     const tokenFromCookie = Cookies.get("token");
@@ -89,7 +92,7 @@ export default function Home() {
               label="Edit"
               className="textPrimary"
               onClick={() => {
-                handleEditClick(id as string);
+                handleModalClick(id as string, true);
               }}
               color="inherit"
             />,
@@ -103,7 +106,7 @@ export default function Home() {
               label="Delete"
               className="textPrimary"
               onClick={() => {
-                console.log("Delete clicked for ID:", id);
+                handleModalClick(id as string, false);
               }}
               color="inherit"
             />
@@ -131,11 +134,15 @@ export default function Home() {
     }));
   };
 
-  const handleEditClick = (id: string) => {
+  const handleModalClick = (id: string, isEdit: boolean) => {
     const speciesToEdit =
       data?.data.find((species) => species.id === id) || null;
     setSelectedSpecies(speciesToEdit);
-    setOpen(true);
+    if (isEdit) {
+      setOpenEdit(true);
+    } else {
+      setOpenDelete(true);
+    }
   };
 
   return (
@@ -184,8 +191,8 @@ export default function Home() {
       {selectedSpecies && (
         <EditSpeciesModal
           id={selectedSpecies.id}
-          open={open}
-          handleClose={handleClose}
+          open={openEdit}
+          handleClose={handleCloseEdit}
           initialData={{
             faoCode: selectedSpecies.faoCode,
             typeOfFish: selectedSpecies.typeOfFish,
@@ -197,6 +204,13 @@ export default function Home() {
             statusInIndonesia: selectedSpecies.statusInIndonesia || undefined,
             fishUtilization: selectedSpecies.fishUtilization || undefined,
           }}
+        />
+      )}
+      {selectedSpecies && (
+        <DeleteSpeciesModal
+          handleClose={handleCloseDelete}
+          open={openDelete}
+          id={selectedSpecies.id}
         />
       )}
     </>
