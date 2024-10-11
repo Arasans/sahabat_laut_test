@@ -4,9 +4,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, TextField, Typography, Button, Modal } from "@mui/material";
 import {
-  EditSpeciesInput,
-  editSpeciesValidation,
-} from "../validations/species/edit-species-validation";
+  SpeciesInput,
+  speciesValidation,
+} from "../validations/species/species-validation";
 import { useEditSpecies } from "@/hooks/auth/species/use-edit-species";
 import toast from "react-hot-toast";
 
@@ -14,7 +14,7 @@ interface EditSpeciesModalProps {
   id: string;
   open: boolean;
   handleClose: () => void;
-  initialData: EditSpeciesInput;
+  initialData: SpeciesInput;
 }
 
 export default function EditSpeciesModal({
@@ -27,8 +27,8 @@ export default function EditSpeciesModal({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<EditSpeciesInput>({
-    resolver: zodResolver(editSpeciesValidation),
+  } = useForm<SpeciesInput>({
+    resolver: zodResolver(speciesValidation),
     defaultValues: initialData,
   });
 
@@ -45,7 +45,7 @@ export default function EditSpeciesModal({
     },
   });
 
-  const onSubmit = (data: EditSpeciesInput) => {
+  const onSubmit = (data: SpeciesInput) => {
     editSpecies({ id, data });
   };
 

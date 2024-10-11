@@ -30,7 +30,7 @@ const Navbar: React.FC = () => {
         </Typography>
         {token ? (
           <>
-            <Button color="inherit" onClick={() => console.log("CEK")}>
+            <Button color="inherit" onClick={() => router.push("/create")}>
               Tambah
             </Button>
             <Button color="inherit" onClick={handleLogout}>

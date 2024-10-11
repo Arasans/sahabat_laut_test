@@ -1,4 +1,4 @@
-import { EditSpeciesInput } from "@/app/validations/species/edit-species-validation";
+import { EditSpeciesInput } from "@/app/validations/species/species-validation";
 import api from "@/lib/api";
 
 export async function putSpecies({
