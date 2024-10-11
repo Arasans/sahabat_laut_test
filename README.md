@@ -26,6 +26,20 @@ This project is a web application built with Next.js for managing fish species d
 - **Axios**: For making HTTP requests
 - **React Query**: For managing server state and caching
 
+## Installation Instructions
+# Requirement
+- **Node.js** (version 14.x or later)
+- **npm** (version 5.6.0 or later) or **yarn**
+
+# Steps
+```bash
+
+  git clone https://github.com/Arasans/sahabat_laut_test.git
+  cd sahabat_laut_test
+  npm i
+```
+
+
 ## Getting Started
 
 First, run the development server:
