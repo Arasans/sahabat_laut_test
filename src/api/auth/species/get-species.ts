@@ -1,8 +1,6 @@
-"use server";
+import api from "@/lib/api";
 
-import api from "@/lib/api"; 
-
-interface Species {
+export interface Species {
   id: string;
   faoCode: string;
   typeOfFish: string;

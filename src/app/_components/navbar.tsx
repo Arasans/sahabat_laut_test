@@ -29,9 +29,14 @@ const Navbar: React.FC = () => {
           Species App
         </Typography>
         {token ? (
-          <Button color="inherit" onClick={handleLogout}>
-            Logout
-          </Button>
+          <>
+            <Button color="inherit" onClick={() => console.log("CEK")}>
+              Tambah
+            </Button>
+            <Button color="inherit" onClick={handleLogout}>
+              Logout
+            </Button>
+          </>
         ) : (
           <Button color="inherit" onClick={handleLogin}>
             Login

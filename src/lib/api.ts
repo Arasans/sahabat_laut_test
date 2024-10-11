@@ -1,6 +1,6 @@
-"use server";
 import axios from "axios";
 import Cookies from "js-cookie";
+import Router from "next/router";
 
 const api = axios.create({
   baseURL: "https://test.api.sahabatlautlestari.com",
@@ -30,20 +30,19 @@ api.interceptors.response.use(
     ) {
       originalRequest._retry = true;
 
-      try {
-        const refreshToken = Cookies.get("refreshToken");
-        if (!refreshToken) {
-          console.error("Refresh token tidak ditemukan");
-          window.location.href = "/login";
-          return Promise.reject(error);
-        }
+      const refreshToken = Cookies.get("refreshToken");
+      if (!refreshToken) {
+        console.error("Refresh token tidak ditemukan");
+        Router.push("/login");
+        return Promise.reject(error);
+      }
 
+      try {
         const refreshResponse = await api.post("/auth/refresh-token", {
           refreshToken,
         });
 
         const newAccessToken = refreshResponse.data.accessToken;
-
         Cookies.set("token", newAccessToken);
 
         api.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -51,12 +50,12 @@ api.interceptors.response.use(
 
         return api(originalRequest);
       } catch (err) {
-        console.error("Refresh token expired or invalid");
+        console.error("Refresh token expired or invalid", err);
 
-        Cookies.set("token", "", { expires: new Date(0) });
-        Cookies.set("refreshToken", "", { expires: new Date(0) });
+        Cookies.remove("token");
+        Cookies.remove("refreshToken");
 
-        window.location.href = "/login";
+        Router.push("/login");
         return Promise.reject(err);
       }
     }

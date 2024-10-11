@@ -1,21 +1,7 @@
-"use server";
 import api from "@/lib/api";
+import { Species } from "./get-species";
 
-interface SpeciesDetailResponse {
-  id: string;
-  faoCode: string;
-  typeOfFish: string;
-  scientificName: string;
-  englishName: string;
-  indonesianName: string;
-  localName: string;
-  typeOfWater: string;
-  imageUrl: null;
-  statusInIndonesia: string;
-  fishUtilization: string;
-}
-
-export async function getSpeciesId(id: string): Promise<SpeciesDetailResponse> {
+export async function getSpeciesId(id: string): Promise<Species> {
   const response = await api.get(`/species/${id}`);
   return response.data;
 }

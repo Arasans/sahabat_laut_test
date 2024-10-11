@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Container, Typography, Box, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Container, Typography, Box, TextField, Tooltip } from "@mui/material";
 import {
   DataGrid,
   GridActionsCellItem,
@@ -14,9 +14,22 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PageviewIcon from "@mui/icons-material/Pageview";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { Species } from "@/api/auth/species/get-species";
+import EditSpeciesModal from "./_components/EditSpeciesModal";
 
 export default function Home() {
   const router = useRouter();
+  const [token, setToken] = useState<string | undefined>(undefined);
+  const [selectedSpecies, setSelectedSpecies] = useState<Species | null>(null);
+
+  const [open, setOpen] = useState(false);
+  const handleClose = () => setOpen(false);
+
+  useEffect(() => {
+    const tokenFromCookie = Cookies.get("token");
+    setToken(tokenFromCookie);
+  }, []);
 
   const [pagination, setPagination] = useState({
     pageNumber: 0,
@@ -24,7 +37,7 @@ export default function Home() {
     keyword: "",
   });
 
-  const { data, isLoading, isError, error } = useSpecies({
+  const { data, isLoading, isFetching, isError, error } = useSpecies({
     pageNumber: pagination.pageNumber + 1,
     pageSize: pagination.pageSize,
     keyword: pagination.keyword || undefined,
@@ -49,36 +62,56 @@ export default function Home() {
       headerName: "Actions",
       width: 150,
       cellClassName: "actions",
-      getActions: ({ id }) => [
-        <GridActionsCellItem
-          key="edit"
-          icon={<EditIcon />}
-          label="Edit"
-          className="textPrimary"
-          onClick={() => {
-            console.log("halo");
-            // handleEditClick(id);
-          }}
-          color="inherit"
-        />,
-        <GridActionsCellItem
-          key="delete"
-          icon={<DeleteIcon />}
-          label="Delete"
-          onClick={() => {
-            console.log("halo");
-            // handleDeleteClick(id);
-          }}
-          color="inherit"
-        />,
-        <GridActionsCellItem
-          key="view"
-          icon={<PageviewIcon />}
-          label="View"
-          onClick={() => router.push(`/${id}`)}
-          color="inherit"
-        />,
-      ],
+      getActions: ({ id }) => {
+        const actions = [
+          <GridActionsCellItem
+            key="view"
+            icon={
+              <Tooltip title="View">
+                <PageviewIcon />
+              </Tooltip>
+            }
+            label="View"
+            onClick={() => router.push(`/${id}`)}
+            color="inherit"
+          />,
+        ];
+
+        if (token) {
+          actions.push(
+            <GridActionsCellItem
+              key="edit"
+              icon={
+                <Tooltip title="Edit">
+                  <EditIcon />
+                </Tooltip>
+              }
+              label="Edit"
+              className="textPrimary"
+              onClick={() => {
+                handleEditClick(id as string);
+              }}
+              color="inherit"
+            />,
+            <GridActionsCellItem
+              key="delete"
+              icon={
+                <Tooltip title="Delete">
+                  <DeleteIcon />
+                </Tooltip>
+              }
+              label="Delete"
+              className="textPrimary"
+              onClick={() => {
+                console.log("Delete clicked for ID:", id);
+              }}
+              color="inherit"
+            />
+          );
+        }
+
+        return actions;
+      },
     },
   ];
 
@@ -98,6 +131,13 @@ export default function Home() {
     }));
   };
 
+  const handleEditClick = (id: string) => {
+    const speciesToEdit =
+      data?.data.find((species) => species.id === id) || null;
+    setSelectedSpecies(speciesToEdit);
+    setOpen(true);
+  };
+
   return (
     <>
       <Navbar />
@@ -106,7 +146,6 @@ export default function Home() {
           Species List
         </Typography>
 
-        {/* Search Bar */}
         <Box my={2}>
           <TextField
             label="Search species"
@@ -136,11 +175,30 @@ export default function Home() {
             }}
             onPaginationModelChange={handlePaginationChange}
             pageSizeOptions={[5, 10, 15, 20]}
-            loading={isLoading}
+            loading={isLoading || isFetching}
             autoHeight
           />
         </div>
       </Container>
+
+      {selectedSpecies && (
+        <EditSpeciesModal
+          id={selectedSpecies.id}
+          open={open}
+          handleClose={handleClose}
+          initialData={{
+            faoCode: selectedSpecies.faoCode,
+            typeOfFish: selectedSpecies.typeOfFish,
+            scientificName: selectedSpecies.scientificName,
+            englishName: selectedSpecies.englishName,
+            indonesianName: selectedSpecies.indonesianName,
+            imageUrl: selectedSpecies.imageUrl || undefined,
+            typeOfWater: selectedSpecies.typeOfWater || undefined,
+            statusInIndonesia: selectedSpecies.statusInIndonesia || undefined,
+            fishUtilization: selectedSpecies.fishUtilization || undefined,
+          }}
+        />
+      )}
     </>
   );
 }
