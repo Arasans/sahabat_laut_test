@@ -2,11 +2,22 @@
 
 import { useState } from "react";
 import { Container, Typography, Box, TextField } from "@mui/material";
-import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridActionsCellItem,
+  GridColDef,
+  GridPaginationModel,
+} from "@mui/x-data-grid";
 import Navbar from "./_components/navbar";
-import { useSpecies } from "@/hooks/auth/species/use-species"; // Ensure the import is correct
+import { useSpecies } from "@/hooks/auth/species/use-species";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PageviewIcon from "@mui/icons-material/Pageview";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
   const [pagination, setPagination] = useState({
     pageNumber: 0,
     pageSize: 10,
@@ -32,6 +43,43 @@ export default function Home() {
       width: 200,
     },
     { field: "fishUtilization", headerName: "Utilization", width: 150 },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 150,
+      cellClassName: "actions",
+      getActions: ({ id }) => [
+        <GridActionsCellItem
+          key="edit"
+          icon={<EditIcon />}
+          label="Edit"
+          className="textPrimary"
+          onClick={() => {
+            console.log("halo");
+            // handleEditClick(id);
+          }}
+          color="inherit"
+        />,
+        <GridActionsCellItem
+          key="delete"
+          icon={<DeleteIcon />}
+          label="Delete"
+          onClick={() => {
+            console.log("halo");
+            // handleDeleteClick(id);
+          }}
+          color="inherit"
+        />,
+        <GridActionsCellItem
+          key="view"
+          icon={<PageviewIcon />}
+          label="View"
+          onClick={() => router.push(`/${id}`)}
+          color="inherit"
+        />,
+      ],
+    },
   ];
 
   const handlePaginationChange = (model: GridPaginationModel) => {
